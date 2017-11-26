@@ -162,7 +162,7 @@ def close_swap(s, n):
     for i in range(0,n):
         copy = s.copy()
         x1, y1 = np_rand.randint(0,len(s)-1,(2))
-        neib = get_close_neighbours(x1, y1, len(n))
+        neib = get_close_neighbours(x1, y1, len(s))
         neib_i = np_rand.randint(0,len(neib))
         x2, y2 = neib[neib_i]
         copy[x1,y1], copy[x2,y2] = copy[x2,y2], copy[x1,y1]
@@ -179,13 +179,16 @@ def p(e, e_new, t):
 # simulated annealing
 
 def sim_an(s, k_max, t_0, t_1, p, schedule, swap, energy, neighbours_num):
+    start_energy = energy(s)
     for i in range(0, 5):
         for k in range(0, k_max):
             t = schedule(t_0, k, k_max)
             a = swap(s, neighbours_num)
             for s_new in a:
-                if p(energy(s), energy(s_new), t) >= np_rand.random():
+                new_energy = energy(s_new)
+                if p(start_energy, new_energy, t) >= np_rand.random():
                     s = s_new
+                    start_energy = new_energy
             if math.isclose(t_1, t, rel_tol = 0.01):
                 break
     return s
